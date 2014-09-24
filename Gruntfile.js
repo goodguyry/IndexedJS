@@ -5,7 +5,7 @@
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    banner: '/*! Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
+    banner: '/* <%= pkg.name %> <%= pkg.version %> by <%= pkg.author.name %>\n' +
             ' * Source available at <%= pkg.repository.url %> */',
 
     jshint: {
