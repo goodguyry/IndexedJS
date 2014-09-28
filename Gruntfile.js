@@ -25,20 +25,14 @@
       options: {
         report: 'min',
         banner: '<%= banner %>\n\n',
-        mangle: false
+        mangle: false,
+        compress: {
+          drop_console: true
+        }
       },
-      min: {
-        options: {
-          compress: {
-            drop_console: true
-          }
-        },
+      dist: {
         src: 'src/IndexedJS.js',
         dest: 'dist/IndexedJS.min.js'
-      },
-      dev: {
-        src: 'src/IndexedJS.js',
-        dest: 'dist/IndexedJS.dev.min.js'
       }
     },
 
