@@ -1,6 +1,6 @@
 IndexedJS
 ========
-A simple, no-frills wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+A no-frills wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 .
 
 **Distributions**
