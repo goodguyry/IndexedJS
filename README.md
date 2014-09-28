@@ -26,7 +26,7 @@ The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist
 
 [IDBFactory reference](https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory)
 
-To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on your desired schema.
+To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on the desired schema.
 
 ### Options
 
@@ -68,7 +68,7 @@ Type: ``Boolean``
 
 Default: ``false``
 
-If you'd like to use an auto-incremented key, rather than assign values yourself.
+To use an auto-incremented key, rather than manually assign values.
 
 **indexes**
 
@@ -103,7 +103,7 @@ var init = {
 };
 ```
 
-Then instantiate a new IndexedJS object, passing in the object you declared.
+Then instantiate a new IndexedJS object, passing in the declared object.
 
 ```javascript
 var RockAlbums = new IndexedJS(init);
@@ -131,9 +131,9 @@ For queries, ``this`` refers to the object found in the ObjectStore.
 IndexedJS.query(Object [, Array]);
 ```
 
-Queries are executed via the ``IndexedJS.query`` method. The type of query depends on the object properties you pass in.
+Queries are executed via the ``IndexedJS.query`` method. The type of query depends on the object properties passed in.
 
-The ``Array`` passed as the optional second argument is the list of ObjectStores you want to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+The ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
 
 ### Options
 
@@ -143,7 +143,7 @@ Type: ``String``
 
 Default: ``"readonly"``
 
-Depending on what you need to accomplish while querying the database, you may need to set the mode to ``"readwrite"``.
+To interact with objects in the ObjectStore, set the mode to ``"readwrite"``.
 
 **key**
 
@@ -192,7 +192,7 @@ Type: ``Object``
 
 Default: ``false``
 
-To use a cursor, include the ``cursor`` object in the options you pass to the ``IndexedJS.query`` method. The ``cursor`` settings overrides ``key`` and ``index`` queries. The property options are as follows:
+To use a cursor, include the ``cursor`` object in the options passed to the ``IndexedJS.query`` method. The ``cursor`` settings overrides ``key`` and ``index`` queries. The property options are as follows:
 
 **cursor.bound**
 
@@ -296,7 +296,7 @@ var opts = {
 RockAlbums.query(opts);
 ```
 
-Or, of course, you could just create an array outside of the function and use it. As always, do whatever works best for you.
+Or, of course, an array could be created outside of the function and used in the same manner. As always, do whatever works best for the project.
 
 ## Adding to/updating the ObjectStore
 
@@ -306,7 +306,7 @@ IndexedJS.add(Object [, Array]);
 
 For the ``add`` method, the mode is automatically ``"readwrite"`` and cannot be overridden.
 
-As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores you want to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
 
 ### Options
 
@@ -346,7 +346,7 @@ IndexedJS.delete(Object [, Array]);
 
 For the ``delete`` method, the mode is automatically ``"readwrite"`` and cannot be overridden.
 
-As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores you want to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
 
 ### Options
 
