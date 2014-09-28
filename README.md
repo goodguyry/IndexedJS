@@ -379,6 +379,7 @@ RockAlbums.add({
 
 - Add [IDBVersionChangeRequest.setVersion](https://developer.mozilla.org/en-US/docs/Web/API/IDBVersionChangeRequest.setVersion) support for older WebKit browsers
 - Add backward compatibility for [IDBDatabase.transaction](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase.transaction) (see 'mode' near the bottom of the page)
+- Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object
 - Add support for creating and querying more than one ObjectStore at a time
 - Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)
 - Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)
