@@ -103,16 +103,10 @@ var init = {
 };
 ```
 
-Then instantiate a new IndexedJS object, passing in the declared object.
+Then instantiate a new IndexedJS object, passing in the declared object. Note the ``onsuccess`` and ``onerror`` handlers passed into ``new IndexedJS()`` are used by the ``IndexedJS.open`` method.
 
 ```javascript
 var RockAlbums = new IndexedJS(init);
-```
-
-After that, it's just a matter of opening the database. Note the ``onsuccess`` and ``onerror`` handlers passed into ``new IndexedJS()`` are used by the ``IndexedJS.open`` method, not fired when the new IndexedJS object is created.
-
-```javascript
-RockAlbums.open();
 ```
 
 ## DOM Event handlers and ``this``
@@ -379,9 +373,14 @@ RockAlbums.add({
 
 - Add [IDBVersionChangeRequest.setVersion](https://developer.mozilla.org/en-US/docs/Web/API/IDBVersionChangeRequest.setVersion) support for older WebKit browsers
 - Add backward compatibility for [IDBDatabase.transaction](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase.transaction) (see 'mode' near the bottom of the page)
-- Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object
+- <del>Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object</del>
 - Add support for creating and querying more than one ObjectStore at a time
 - Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)
 - Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)
 - Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)
 - Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
+
+
+**Changelog:**
+
+- It is no longer necessary to call the ``IndexedJS.open()`` method after instantiation.

@@ -14,11 +14,12 @@ function IndexedJS(options) {
   window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
   options = options || {};
-  this.database = options.name || null;
-  this.version = options.version || null;
-  this.store = options.store || null;
+  this.opts = {};
+  this.opts.database = options.name || null;
+  this.opts.version = options.version || null;
+  this.opts.store = options.store || null;
 
-  if (!this.database || !this.version) {
+  if (!this.opts.database || !this.opts.version) {
     console.error('You must specify a name and version number (int) for the database');
   }
 
@@ -26,76 +27,77 @@ function IndexedJS(options) {
    * Key Path vs. Key Generator
    * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Structuring_the_database
    */
-  this.keyPath = options.keyPath || false;
-  this.autoIncrement = options.autoIncrement || false;
-  this.indexes = options.indexes || null;
+  this.opts.keyPath = options.keyPath || false;
+  this.opts.autoIncrement = options.autoIncrement || false;
+  this.opts.indexes = options.indexes || null;
 
-  this.onsuccess = options.onsuccess || false;
-  this.onerror = options.onerror || false;
+  this.opts.onsuccess = options.onsuccess || false;
+  this.opts.onerror = options.onerror || false;
 
   this.db = null;
 
-  var that = this;
+  this.open(this.opts);
+}
 
-  /**
-   * IndexedJS.open
-   * Open the database
-   */
-  this.open = function() {
-    var setKey;
+/**
+ * IndexedJS.open
+ * Open the database
+ *
+ * @param {Object} opts The options parsed by the IndexedJS object
+ */
+IndexedJS.prototype.open = function(opts) {
+  var setKey;
 
-    if (that.keyPath) {
-      // Use a key path
-      setKey = { keyPath: that.keyPath };
-    } else if (that.autoIncrement) {
-      // Use a key generator
-      setKey = { autoIncrement: true };
-    } else {
-      setKey = false;
+  if (opts.keyPath) {
+    // Use a key path
+    setKey = { keyPath: opts.keyPath };
+  } else if (opts.autoIncrement) {
+    // Use a key generator
+    setKey = { autoIncrement: true };
+  } else {
+    setKey = false;
+  }
+
+  var request = indexedDB.open(opts.database, opts.version);
+
+  // Sets up the datastore
+  // Only on first run and version change
+  request.onupgradeneeded = function(e) {
+    var db = e.target.result;
+    var objStore;
+
+    if(!db.objectStoreNames.contains(opts.store)) {
+      // Create the ObjectStore
+      if (setKey) {
+        objStore = db.createObjectStore(opts.store, setKey);
+      }
+      // Create indexes by which environments can be found
+      if (opts.indexes) {
+        for (var key in opts.indexes) {
+          // store.createIndex("String", "String", { unique: Boolean });
+          objStore.createIndex(key, key, { unique: opts.indexes[key] });
+        }
+      }
     }
-
-    var request = indexedDB.open(that.database, that.version);
-
-    // Sets up the datastore
-    // Only on first run and version change
-    request.onupgradeneeded = function(e) {
-      var db = e.target.result;
-      var objStore;
-
-      if(!db.objectStoreNames.contains(that.store)) {
-        // Create the ObjectStore
-        if (setKey) {
-          objStore = db.createObjectStore(that.store, setKey);
-        }
-        // Create indexes by which environments can be found
-        if (that.indexes) {
-          for (var key in that.indexes) {
-            // store.createIndex("String", "String", { unique: Boolean });
-            objStore.createIndex(key, key, { unique: that.indexes[key] });
-          }
-        }
-      }
-
-    };
-
-    request.onsuccess = function(e) {
-      IndexedJS.db = e.target.result;
-      console.log('IndexedJS.open: Successful');
-      if (that.onsuccess) {
-        that.onsuccess(e);
-      }
-    };
-
-    request.onerror = function(e) {
-      console.error(request.errorCode);
-      if (that.onerror) {
-        that.onerror(e);
-      }
-    };
 
   };
 
-}
+  request.onsuccess = function(e) {
+    IndexedJS.db = e.target.result;
+    console.log('IndexedJS.open: Successful');
+    if (opts.onsuccess) {
+      opts.onsuccess(e);
+    }
+  };
+
+  request.onerror = function(e) {
+    console.error(request.errorCode);
+    if (opts.onerror) {
+      opts.onerror(e);
+    }
+  };
+
+};
 
 /**
  * IndexedJS.verifyOptions
@@ -135,7 +137,7 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
   var options = this.verifyOptions(queryOptions);
 
   if (!storeArray) {
-    storeArray = this.store;
+    storeArray = this.opts.store;
     console.warn('IndexedJS.query: No Object Store given; assuming "'+storeArray+'"');
   }
 
@@ -283,7 +285,7 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
   var options = this.verifyOptions(addOptions);
 
   if (!storeArray) {
-    storeArray = this.store;
+    storeArray = this.opts.store;
     console.warn('IndexedJS.add: No Object Store given; assuming "'+storeArray+'"');
   }
 
@@ -336,7 +338,7 @@ IndexedJS.prototype.delete = function(deleteOptions, storeArray) {
   var options = this.verifyOptions(deleteOptions);
 
   if (!storeArray) {
-    storeArray = this.store;
+    storeArray = this.opts.store;
     console.warn('IndexedJS.delete: No Object Store given; assuming "'+storeArray+'"');
   }
 
