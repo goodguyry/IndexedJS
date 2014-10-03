@@ -66,6 +66,10 @@ IndexedJS.prototype.open = function(opts) {
     var db = e.target.result;
     var objStore;
 
+    if(db.objectStoreNames.contains(opts.store)) {
+      db.deleteObjectStore(opts.store);
+    }
+
     if(!db.objectStoreNames.contains(opts.store)) {
       // Create the ObjectStore
       if (setKey) {
