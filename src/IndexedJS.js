@@ -66,6 +66,10 @@ IndexedJS.prototype.open = function(opts) {
     var db = e.target.result;
     var objStore;
 
+    e.target.result.onerror = function(e) {
+      console.error('IndexedJS.onupgradeneeded: Error', e);
+    };
+
     if(db.objectStoreNames.contains(opts.store)) {
       db.deleteObjectStore(opts.store);
     }
