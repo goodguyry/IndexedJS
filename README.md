@@ -198,6 +198,14 @@ Default: ``null``
 
 Set the ``bound`` property to ``false`` to cursor over all objects in the ObjectStore with no IDBKeyRange. Set to ``true`` to give yourself something to debug ;)
 
+**cursor.advance**
+
+Type: ``Number``
+
+Default: ``false``
+
+Set the ``advance`` property to advance the cursor by the specified number of places. When not set, the cursor will ``continue``.
+
 #### Setting a keyRange
 
 [IDBKeyRange reference](https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange)
@@ -378,7 +386,7 @@ RockAlbums.add({
 - <del>Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object</del>
 - Add support for creating and querying more than one ObjectStore at a time
 - <del>Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)</del> I have no idea what this was referring to.
-- Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)
+- Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (<del>``advance``</del>, ``delete`` and ``update``)
 - <del>Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)</del>
 - Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
 
@@ -388,3 +396,4 @@ RockAlbums.add({
 - It is no longer necessary to call the ``IndexedJS.open()`` method after instantiation.
 - Added backward compatibility for IDBDatabase.transaction
 - Changed ``this`` for ``cursor.onsuccess`` to refer to the cursor itself to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)
+- Added support for ``cursor.advance`` method

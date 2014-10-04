@@ -126,6 +126,7 @@ IndexedJS.prototype.verifyOptions = function(options) {
   opts.cursor.only = options.cursor.only || false;
   opts.cursor.lower = options.cursor.lower || false;
   opts.cursor.upper = options.cursor.upper || false;
+  opts.cursor.advance = options.cursor.advance || false;
 
   opts.onerror = options.onerror || false;
   opts.oncomplete = options.oncomplete || false;
@@ -222,13 +223,21 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
 
       // Cursor through all saved environments
       cursor.onsuccess = function(e) {
+        var moveCursor;
         result = e.target.result;
         if (result) {
           console.dir(result.value);
+
+          if (options.cursor.advance) {
+            moveCursor = result.advance(options.cursor.advance);
+          } else {
+            moveCursor = result.continue();
+          }
+
           if (options.onsuccess) {
             options.onsuccess.call(result);
           }
-          result.continue();
+          moveCursor;
         }
       };
 
