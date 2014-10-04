@@ -113,7 +113,9 @@ var RockAlbums = new IndexedJS(init);
 
 **onsuccess**
 
-For queries, ``this`` refers to the object found in the ObjectStore.
+_key & index queries_: ``this`` refers to the object found in the ObjectStore.
+
+_cursor queries_: ``this`` refers to the ``cursor`` itself, which give access to the ``cursor`` properties (``source``, ``direction``, ``key`` and ``primaryKey``).
 
 **oncomplete**
 
@@ -377,7 +379,7 @@ RockAlbums.add({
 - Add support for creating and querying more than one ObjectStore at a time
 - <del>Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)</del> I have no idea what this was referring to.
 - Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)
-- Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)
+- <del>Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)</del>
 - Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
 
 
@@ -385,3 +387,4 @@ RockAlbums.add({
 
 - It is no longer necessary to call the ``IndexedJS.open()`` method after instantiation.
 - Added backward compatibility for IDBDatabase.transaction
+- Changed ``this`` for ``cursor.onsuccess`` to refer to the cursor itself to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)

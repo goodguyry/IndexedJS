@@ -226,7 +226,7 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
         if (result) {
           console.dir(result.value);
           if (options.onsuccess) {
-            options.onsuccess.call(result.value);
+            options.onsuccess.call(result);
           }
           result.continue();
         }
