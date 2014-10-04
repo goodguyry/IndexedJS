@@ -10,7 +10,7 @@ function IndexedJS(options) {
 
   // Include prefixed implementations
   window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-  window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+  window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || { READ_WRITE: 'readwrite' };
   window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
   options = options || {};
@@ -300,7 +300,7 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
   }
 
   if (IndexedJS.db) {
-    var transaction = IndexedJS.db.transaction(storeArray, 'readwrite');
+    var transaction = IndexedJS.db.transaction(storeArray, IDBTransaction.READ_WRITE);
     var objStore = transaction.objectStore(storeArray);
     var request = objStore.put(options.data);
 
@@ -353,7 +353,7 @@ IndexedJS.prototype.delete = function(deleteOptions, storeArray) {
   }
 
   if (IndexedJS.db) {
-    var transaction = IndexedJS.db.transaction(storeArray, 'readwrite');
+    var transaction = IndexedJS.db.transaction(storeArray, IDBTransaction.READ_WRITE);
     var objStore = transaction.objectStore(storeArray);
     var request = objStore.delete(options.key);
 
