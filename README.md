@@ -386,7 +386,7 @@ RockAlbums.add({
 - <del>Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object</del>
 - Add support for creating and querying more than one ObjectStore at a time
 - <del>Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)</del> I have no idea what this was referring to.
-- Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (<del>``advance``</del>, ``delete`` and ``update``)
+- <del>Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)</del>
 - <del>Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)</del>
 - Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
 
@@ -397,3 +397,4 @@ RockAlbums.add({
 - Added backward compatibility for IDBDatabase.transaction
 - Changed ``this`` for ``cursor.onsuccess`` to refer to the cursor itself to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)
 - Added support for ``cursor.advance`` method
+- Added support for ``cursor.delete`` and ``cursor.update`` methods
