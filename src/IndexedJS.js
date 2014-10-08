@@ -228,16 +228,15 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
         if (result) {
           console.dir(result.value);
 
-          if (options.cursor.advance) {
-            moveCursor = result.advance(options.cursor.advance);
-          } else {
-            moveCursor = result.continue();
-          }
-
           if (options.onsuccess) {
             options.onsuccess.call(result);
           }
-          moveCursor;
+
+          if (options.cursor.advance) {
+            result.advance(options.cursor.advance);
+          } else {
+            result.continue();
+          }
         }
       };
 

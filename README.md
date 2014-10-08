@@ -115,7 +115,7 @@ var RockAlbums = new IndexedJS(init);
 
 _key & index queries_: ``this`` refers to the object found in the ObjectStore.
 
-_cursor queries_: ``this`` refers to the ``cursor`` itself, which give access to the ``cursor`` properties (``source``, ``direction``, ``key`` and ``primaryKey``).
+_cursor queries_: ``this`` refers to the ``cursor`` itself, which give access to the ``cursor`` properties (``source``, ``direction``, ``key`` and ``primaryKey``) and methods (``delete`` and ``update``).
 
 **oncomplete**
 
