@@ -1,11 +1,10 @@
 IndexedJS
 ========
-A no-frills wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
-.
+A no-frills wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
 **Distributions**
 
-The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist/IndexedJS.min.js) (1218 bytes gzipped) and [development version](https://github.com/goodguyry/IndexedJS/blob/master/src/IndexedJS.js).
+The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist/IndexedJS.min.js) (1282 bytes gzipped) and [development version](https://github.com/goodguyry/IndexedJS/blob/master/src/IndexedJS.js).
 
 # Usage
 
@@ -381,17 +380,12 @@ RockAlbums.add({
 
 ## Todo
 
-- <del>Add [IDBVersionChangeRequest.setVersion](https://developer.mozilla.org/en-US/docs/Web/API/IDBVersionChangeRequest.setVersion) support for older WebKit browsers</del> This appears to not be necessary, judging by the [compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/IDBVersionChangeRequest#Browser_Compatibility).
-- <del>Add backward compatibility for [IDBDatabase.transaction](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase.transaction) (see 'mode' near the bottom of the page)</del>
-- <del>Roll the ``open`` method into the instantiation of a ``new IndexedJS()`` object</del>
-- Add support for creating and querying more than one ObjectStore at a time
-- <del>Add callback support for [onupgradeneeded](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest.onupgradeneeded)</del> I have no idea what this was referring to.
-- <del>Add support for [Cursor methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor) (``advance``, ``delete`` and ``update``)</del>
-- <del>Change ``this`` for ``cursor.onsuccess`` to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)</del>
 - Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
 
 
-**Changelog:**
+### Changelog:
+
+**v1.0.0**
 
 - It is no longer necessary to call the ``IndexedJS.open()`` method after instantiation.
 - Added backward compatibility for IDBDatabase.transaction
