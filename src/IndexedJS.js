@@ -18,6 +18,8 @@ function IndexedJS(options) {
   this.opts.database = options.name || null;
   this.opts.version = options.version || null;
   this.opts.store = options.store || null;
+  this.opts.multiStore = false;
+  this.opts.stores = options.stores || null;
 
   if (!this.opts.database || !this.opts.version) {
     console.error('You must specify a name and version number (int) for the database');
@@ -27,9 +29,18 @@ function IndexedJS(options) {
    * Key Path vs. Key Generator
    * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Structuring_the_database
    */
-  this.opts.keyPath = options.keyPath || false;
-  this.opts.autoIncrement = options.autoIncrement || false;
-  this.opts.indexes = options.indexes || null;
+  if (this.opts.stores) {
+    // Create more than one ObjectStore
+    // Set multiStore to true and collect the name
+    this.opts.multiStore = true;
+    this.opts.store = options.stores[0].name || null;
+  }
+
+  // Assign values for first pass
+  // createAdditionalObjectStores() will take care of any additional ObjectStores
+  this.opts.keyPath = options.keyPath || options.stores[0].keyPath || false;
+  this.opts.autoIncrement = options.autoIncrement || options.stores[0].autoIncrement || false;
+  this.opts.indexes = options.indexes || options.stores[0].indexes || null;
 
   this.opts.onsuccess = options.onsuccess || false;
   this.opts.onerror = options.onerror || false;
@@ -48,15 +59,20 @@ function IndexedJS(options) {
 IndexedJS.prototype.open = function(opts) {
   var setKey;
 
-  if (opts.keyPath) {
-    // Use a key path
-    setKey = { keyPath: opts.keyPath };
-  } else if (opts.autoIncrement) {
-    // Use a key generator
-    setKey = { autoIncrement: true };
-  } else {
-    setKey = false;
+  // @returns the keyPath setting for the passed options object
+  function setKeyOption(options) {
+    if (options.keyPath) {
+      // Use a key path
+      return { keyPath: options.keyPath };
+    } else if (options.autoIncrement) {
+      // Use a key generator
+      return { autoIncrement: true };
+    } else {
+      return false;
+    }
   }
+
+  setKey = setKeyOption(opts);
 
   var request = indexedDB.open(opts.database, opts.version);
 
@@ -90,8 +106,40 @@ IndexedJS.prototype.open = function(opts) {
 
   };
 
+  /**
+   * Create multiple ObjectStores
+   *
+   * @param {Object} database The IndexedJS.db object
+   * @param {Object} opts An index of the options.stores array
+   */
+  function createAdditionalObjectStores(database, opts) {
+    var setKey, db, objStore;
+    var version =  parseInt(database.version);
+    // Close the database; reopen it and upgrade
+    database.close();
+
+    // Open the database and create the ObjectStore
+    var nextRequest = indexedDB.open(database.name, version+1);
+
+    nextRequest.onupgradeneeded = function (e) {
+      setKey = setKeyOption(opts);
+      db = e.target.result;
+      objStore = db.createObjectStore(opts.name, setKey);
+    };
+
+    nextRequest.onsuccess = function (e) {
+      e.target.result.close();
+    };
+  }
+
   request.onsuccess = function(e) {
     IndexedJS.db = e.target.result;
+    if (opts.multiStore) {
+      console.log('running multiStore');
+      for(var i = 1; i < opts.stores.length; i++) {
+        createAdditionalObjectStores(IndexedJS.db, opts.stores[i]);
+      }
+    }
     console.log('IndexedJS.open: Successful');
     if (opts.onsuccess) {
       opts.onsuccess(e);

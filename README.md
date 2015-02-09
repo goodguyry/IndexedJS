@@ -25,7 +25,7 @@ The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist
 
 [IDBFactory reference](https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory)
 
-To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on the desired schema.
+To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on the desired schema. See also [Create multiple ObjectStores for one database](#create-multiple-objectstores-for-one-database).
 
 ### Options
 
@@ -51,7 +51,7 @@ Type: ``String``
 
 Default: ``null``
 
-The name given to the ObjectStore
+The name given to the ObjectStore.
 
 **keyPath**
 
@@ -106,6 +106,87 @@ Then instantiate a new IndexedJS object, passing in the declared object. Note th
 
 ```javascript
 var RockAlbums = new IndexedJS(init);
+```
+
+### Create multiple ObjectStores for one database
+
+To create more than one ObjectStore for a database, pass a `stores` array of objects. The version will be incremented for each additional ObjectStore created.
+
+**stores**
+
+Type: ``Array``
+
+Default: ``null``
+
+Holds the ObjectStore options objects
+
+**stores.name**
+
+Type: ``String``
+
+Default: ``null``
+
+The name given to the ObjectStore.
+
+**stores.keyPath**
+
+Type: ``Number`` or ``String``
+
+Default: ``false``
+
+The keyPath tells the browser what to use as the key
+
+**stores.autoIncrement**
+
+Type: ``Boolean``
+
+Default: ``false``
+
+To use an auto-incremented key, rather than manually assign values.
+
+**stores.indexes**
+
+Type: ``Object``
+
+Default: ``null``
+
+The ``index`` object's properties are the index names, and property values are whether or not they should be unique (``Boolean``).
+
+```javascript
+
+/* Initialize the database and create multiple ObjectStores */
+
+var init = {
+  name: "Albums",
+  version: 1,
+  stores: [
+    {
+      name: "Rock",
+      keyPath: "key",
+      indexes: {
+        // indexName: Unique
+        band: false,
+        title: false
+      },
+    },
+    {
+      name: "Bands",
+      autoincrement: true,
+      indexes: {
+        // indexName: Unique
+        band: true
+      },
+    }
+  ],
+  onsuccess: function(e) {
+    // onsuccess callback
+    console.log('Database open');
+  },
+  onerror: function(e) {
+    // onerror callback
+    console.dir(e.target.errorCode);
+  }
+};
 ```
 
 ## DOM Event handlers and ``this``
