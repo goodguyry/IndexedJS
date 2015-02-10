@@ -115,21 +115,25 @@ IndexedJS.prototype.open = function(opts) {
   function createAdditionalObjectStores(database, opts) {
     var setKey, db, objStore;
     var version =  parseInt(database.version);
-    // Close the database; reopen it and upgrade
-    database.close();
 
-    // Open the database and create the ObjectStore
-    var nextRequest = indexedDB.open(database.name, version+1);
+    // Create the ObjectStore
+    if(!database.objectStoreNames.contains(opts.name)) {
+      // Close the database; reopen it and upgrade
+      database.close();
 
-    nextRequest.onupgradeneeded = function (e) {
-      setKey = setKeyOption(opts);
-      db = e.target.result;
-      objStore = db.createObjectStore(opts.name, setKey);
-    };
+      var nextRequest = indexedDB.open(database.name, version+1);
 
-    nextRequest.onsuccess = function (e) {
-      e.target.result.close();
-    };
+      nextRequest.onupgradeneeded = function (e) {
+        setKey = setKeyOption(opts);
+        db = e.target.result;
+        objStore = db.createObjectStore(opts.name, setKey);
+      };
+
+      nextRequest.onsuccess = function (e) {
+        e.target.result.close();
+      };
+    }
+
   }
 
   request.onsuccess = function(e) {
