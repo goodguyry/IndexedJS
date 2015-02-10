@@ -147,9 +147,10 @@ IndexedJS.prototype.open = function(opts) {
   };
 
   request.onerror = function(e) {
-    console.error(request.errorCode);
     if (opts.onerror) {
       opts.onerror(e);
+    } else {
+      console.log(e.target.error.name + ': ' + e.target.error.message);
     }
   };
 
