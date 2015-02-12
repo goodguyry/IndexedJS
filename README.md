@@ -194,7 +194,7 @@ The `index` object's property is the index name, and property value is the index
 TimeTracker.query({
     mode: "readwrite",
     index: {
-      // Find a PROJECT BY NAME
+      // Find a project by name
       name: "IndexedJS Documentation",
     },
     onsuccess: function() {
