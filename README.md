@@ -1,10 +1,17 @@
 IndexedJS
 ========
-A no-frills wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
+A wrapper for [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
+
+Key features include:
+
+- Creating multiple ObjectStores
+- Querying, adding to, updating and deleting from ObjectStores
+- Querying by cursor, index or key
+- Support for cursor properties and methods
 
 **Distributions**
 
-The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist/IndexedJS.min.js) (1282 bytes gzipped) and [development version](https://github.com/goodguyry/IndexedJS/blob/master/src/IndexedJS.js).
+The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist/IndexedJS.min.js) (1310 bytes minified and gzipped) and [development version](https://github.com/goodguyry/IndexedJS/blob/master/src/IndexedJS.js).
 
 # Usage
 
@@ -19,165 +26,103 @@ The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist
   - [Collecting values from the cursor](#collecting-values-from-the-cursor)
 - [Adding to/updating the ObjectStore](#adding-toupdating-the-objectstore)
 - [Deleting from the ObjectStore](#deleting-from-the-objectstore)
-- [Todo](#todo)
+- [Changelog](#changelog)
 
 ## Creating and opening the database
 
 [IDBFactory reference](https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory)
 
-To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on the desired schema. See also [Create multiple ObjectStores for one database](#create-multiple-objectstores-for-one-database).
+To create a new database, declare an object with properties for each of the required IndexedDB values, as well as additional values based on the desired schema.
 
 ### Options
 
-**name**
+#### Database options
 
-Type: ``String``
+**name** (_Required_)
 
-Default: ``null``
+Type: `String`
 
-The name of the database
+Default: `null`
 
-**version**
+The name of the database.
 
-Type: ``Number``
+**version** (_Required_)
 
-Default: ``null``
+Type: `Number`
 
-The database version number
+Default: `null`
 
-**store**
+The database version number.
 
-Type: ``String``
-
-Default: ``null``
-
-The name given to the ObjectStore.
-
-**keyPath**
-
-Type: ``Number`` or ``String``
-
-Default: ``false``
-
-The keyPath tells the browser what to use as the key
-
-**autoIncrement**
-
-Type: ``Boolean``
-
-Default: ``false``
-
-To use an auto-incremented key, rather than manually assign values.
-
-**indexes**
-
-Type: ``Object``
-
-Default: ``null``
-
-The ``index`` object's properties are the index names, and property values are whether or not they should be unique (``Boolean``).
-
-```javascript
-
-/* Initialize the database */
-
-var init = {
-  name: "Albums",
-  version: 1,
-  store: "Rock",
-  keyPath: "key",
-  indexes: {
-    // indexName: Unique
-    band: false,
-    title: false
-  },
-  onsuccess: function(e) {
-    // onsuccess callback
-    console.log('Database open');
-  },
-  onerror: function(e) {
-    // onerror callback
-    console.dir(e.target.errorCode);
-  }
-};
-```
-
-Then instantiate a new IndexedJS object, passing in the declared object. Note the ``onsuccess`` and ``onerror`` handlers passed into ``new IndexedJS()`` are used by the ``IndexedJS.open`` method.
-
-```javascript
-var RockAlbums = new IndexedJS(init);
-```
-
-### Create multiple ObjectStores for one database
-
-To create more than one ObjectStore for a database, pass a `stores` array of objects. The version will be incremented for each additional ObjectStore created.
+#### ObjectStores
 
 **stores**
 
-Type: ``Array``
+Type: `Array`
 
-Default: ``null``
+Default: `null`
 
-Holds the ObjectStore options objects
+Holds an array of ObjectStore options objects.
 
 **stores.name**
 
-Type: ``String``
+Type: `String`
 
-Default: ``null``
+Default: `null`
 
 The name given to the ObjectStore.
 
 **stores.keyPath**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
-The keyPath tells the browser what to use as the key
+The keyPath tells IndexedDB what to use as the key; alternative to `stores.autoIncrement`.
 
 **stores.autoIncrement**
 
-Type: ``Boolean``
+Type: `Boolean`
 
-Default: ``false``
+Default: `false`
 
-To use an auto-incremented key, rather than manually assign values.
+To use an auto-incremented key; alternative to `stores.keyPath`.
 
 **stores.indexes**
 
-Type: ``Object``
+Type: `Object`
 
-Default: ``null``
+Default: `null`
 
-The ``index`` object's properties are the index names, and property values are whether or not they should be unique (``Boolean``).
+The `index` object's properties are the index names, and property values are whether or not they should be unique (`Boolean`).
 
 ```javascript
 
-/* Initialize the database and create multiple ObjectStores */
+// Define the ObjectStores
+// Separated out for readability
+var weeks = {
+  name: "Weeks",
+  keyPath: "key",
+  indexes: {
+    project: false,
+    hours: false
+  }
+};
 
-var init = {
-  name: "Albums",
+var projects = {
+  name: "Projects",
+  autoIncrement: true,
+  indexes: {
+    name: true,
+    description: false
+  }
+};
+
+// The main schema object
+var schema = {
+  name: "Time Tracker",
   version: 1,
-  stores: [
-    {
-      name: "Rock",
-      keyPath: "key",
-      indexes: {
-        // indexName: Unique
-        band: false,
-        title: false
-      },
-    },
-    {
-      name: "Bands",
-      autoincrement: true,
-      indexes: {
-        // indexName: Unique
-        band: true
-      },
-    }
-  ],
+  stores: [projects, weeks],
   onsuccess: function(e) {
     // onsuccess callback
     console.log('Database open');
@@ -187,75 +132,84 @@ var init = {
     console.dir(e.target.errorCode);
   }
 };
+```
+
+Then instantiate a new IndexedJS object, passing in the `schema` object. Note the `onsuccess` and `onerror` handlers passed into `new IndexedJS()` are used by the `IndexedJS.open` method.
+
+```javascript
+var TimeTracker = new IndexedJS(schema);
 ```
 
 ## DOM Event handlers and ``this``
 
 **onsuccess**
 
-_key & index queries_: ``this`` refers to the object found in the ObjectStore.
+_key & index queries_: `this` refers to the object found in the ObjectStore.
 
-_cursor queries_: ``this`` refers to the ``cursor`` itself, which give access to the ``cursor`` properties (``source``, ``direction``, ``key`` and ``primaryKey``) and methods (``delete`` and ``update``).
+_cursor queries_: `this` refers to the `cursor` itself, which give access to the `cursor` properties (`cursor.source`, `cursor.direction`, `cursor.key` and `cursor.primaryKey`) and methods (`cursor.delete()` and `cursor.update()`).
 
 **oncomplete**
 
-``this`` refers to the options object passed into ``IndexedJS.query()``.
+`this` refers to the options object passed into `IndexedJS.query()`.
 
 ## Querying the ObjectStore
 
 ```javascript
-IndexedJS.query(Object [, Array]);
+IndexedJS.query(Object, Array);
 ```
 
-Queries are executed via the ``IndexedJS.query`` method. The type of query depends on the object properties passed in.
+Queries are executed via the `IndexedJS.query` method. The type of query depends on the object properties passed in.
 
-The ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+The `Array` passed as the optional second argument is the list of ObjectStores to query.
 
 ### Options
 
 **mode**
 
-Type: ``String``
+Type: `String`
 
-Default: ``"readonly"``
+Default: `"readonly"`
 
-To interact with objects in the ObjectStore, set the mode to ``"readwrite"``.
+To interact with objects in the ObjectStore, set the mode to `"readwrite"`.
 
 **key**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
-Queries for the specified key only; overrides ``index`` setting, overridden by ``cursor`` settings
+Queries for the specified key only; overrides `index` setting, overridden by `cursor` settings
 
 **index**
 
-Type: ``Object``
+Type: `Object`
 
-Default: ``false``
+Default: `false`
 
-The ``index`` object's property is the index name, and property value is the index value being queried for; ``index`` settings are overridden by ``key`` and ``cursor`` settings.
+The `index` object's property is the index name, and property value is the index value being queried for; `index` settings are overridden by `key` and `cursor` settings.
 
 ```javascript
 /* IndexedJS.query() by index */
 
-RockAlbums.query({
-  mode: "readwrite",
-  index: {
-    // Find Houses of the Holy by the mighty Zep
-    title: "Houses of the Holy"
+TimeTracker.query({
+    mode: "readwrite",
+    index: {
+      // Find a PROJECT BY NAME
+      name: "IndexedJS Documentation",
+    },
+    onsuccess: function() {
+      // request.onsuccess
+    },
+    oncomplete: function() {
+      // transaction.complete
+    },
+    onerror: function() {
+      // request.onerror
+    }
   },
-  onsuccess: function() {
-    // request.onsuccess
-  },
-  oncomplete: function() {
-    // transaction.complete
-  },
-  onerror: function() {
-    // request.onerror
-  }
-});
+  // The ObjectStore to query
+  ['Projects']
+);
 ```
 
 #### Using a cursor
@@ -264,89 +218,92 @@ RockAlbums.query({
 
 **cursor**
 
-Type: ``Object``
+Type: `Object`
 
-Default: ``false``
+Default: `false`
 
-To use a cursor, include the ``cursor`` object in the options passed to the ``IndexedJS.query`` method. The ``cursor`` settings overrides ``key`` and ``index`` queries. The property options are as follows:
+To use a cursor, include the `cursor` object in the options passed to the `IndexedJS.query` method. The `cursor` settings override `key` and `index` queries. The property options are as follows:
 
 **cursor.bound**
 
-Type: ``Boolean``
+Type: `Boolean`
 
-Default: ``null``
+Default: `null`
 
-Set the ``bound`` property to ``false`` to cursor over all objects in the ObjectStore with no IDBKeyRange. Set to ``true`` to give yourself something to debug ;)
+Set the `bound` property to `false` to cursor over all objects in the ObjectStore with no IDBKeyRange. Set to `true` to give yourself something to debug ;)
 
 **cursor.advance**
 
-Type: ``Number``
+Type: `Number`
 
-Default: ``false``
+Default: `false`
 
-Set the ``advance`` property to advance the cursor by the specified number of places. When not set, the cursor will ``continue``.
+Set the `advance` property to advance the cursor by the specified number of places. When not set, the cursor will `continue()`.
 
 #### Setting a keyRange
 
 [IDBKeyRange reference](https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange)
 
-To set a lowerBound or upperBound keyRange, set the ``lower`` or ``upper`` property's value to the desired key. Use the ``include`` property to set whether or not to include the passed key in the range.
+To set a lowerBound or upperBound keyRange, set the `lower` or `upper` property's value to the desired key. Use the `include` property to set whether or not to include the passed key in the range.
 
 **cursor.lower**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
 The lowerBound keyRange cursors over all keys _starting with_ the specified key, conditionally including the specified key.
 
 **cursor.upper**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
 The upperBound keyRange cursors over all keys _up to_ the specified key, conditionally including the specified key.
 
 **cursor.include**
 
-Type: ``Boolean``
+Type: `Boolean`
 
-Default: ``false``
+Default: `false`
 
 Whether or not to include the specified key in the cursor iteration.
 
 **Cursor between**
 
-To cursor through keys _between_ the lowerBound and upperBound, set both and use an array of values for the ``include`` property; the first of which for the ``lower`` key, the second for the ``upper`` key.
+To cursor through keys _between_ the lowerBound and upperBound, set both and use an array of values for the `include` property; the first of which for the `lower` key, the second for the `upper` key.
 
 **cursor.only**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
-The ``only`` property only returns the object with the desired key.
+The `only` property only returns the object with the desired key.
 
 ```javascript
 
 /* IndexedJS.query - lowerBound */
 
-RockAlbums.query({
-  cursor: {
-    lower: 1410232894030,
-    include: false
+TimeTracker.query({
+    cursor: {
+      lower: 1410232894030,
+      include: false
+    },
+    onsuccess: function() {
+      // request.onsuccess
+    },
+    oncomplete: function() {
+      // transaction.complete
+    },
+    onerror: function() {
+      // request.onerror
+    }
   },
-  onsuccess: function() {
-    // request.onsuccess
-  },
-  oncomplete: function() {
-    // transaction.complete
-  },
-  onerror: function() {
-    // request.onerror
-  }
-});
+  // The ObjectStore to query
+  ['Weeks']
+);
 ```
 
 #### Collecting values from the cursor
@@ -367,6 +324,7 @@ var opts = {
   },
   onsuccess: function() {
     // collect the titles
+    // `this` refers to the cursor
     opts.titles.push(this.title);
   },
   oncomplete: function() {
@@ -377,7 +335,7 @@ var opts = {
   }
 };
 
-RockAlbums.query(opts);
+TimeTracker.query(opts);
 ```
 
 Or, of course, an array could be created outside of the function and used in the same manner. As always, do whatever works best for the project.
@@ -385,34 +343,34 @@ Or, of course, an array could be created outside of the function and used in the
 ## Adding to/updating the ObjectStore
 
 ```javascript
-IndexedJS.add(Object [, Array]);
+IndexedJS.add(Object, Array);
 ```
 
-For the ``add`` method, the mode is automatically ``"readwrite"`` and cannot be overridden.
+For the `add` method, the mode is automatically `"readwrite"` and cannot be overridden.
 
-As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+As with the `IndexedJS.query` method, the `Array` passed as the second argument is the list of ObjectStores to query.
 
 ### Options
 
 **data**
 
-Type: ``Object``
+Type: `Object`
 
-Default: ``{}``
+Default: `{}`
 
-Add the ``data`` object to the options in order to pass in values to save. For updates, the ``data`` object must contain at least the key for the related object.
+Add the `data` object to the options in order to pass in values to save. For updates, the ``data`` object must contain at least the key for the related object.
 
 ```javascript
 
 /* IndexedJS.add() */
 
-// set up the `presence` object with new or updated values
-var presence = {};
-presence.year = 1976;
-presence.key = "7567-92439-2";
+// set up the `project` object with new or updated values
+var project = {};
+project.name = "Company Website";
+project.description = "Contact page refresh";
 
-RockAlbums.add({
-  data: presence,
+TimeTracker.add({
+  data: project,
   onsuccess: function() {
     // handle events
   },
@@ -425,30 +383,30 @@ RockAlbums.add({
 ## Deleting from the ObjectStore
 
 ```javascript
-IndexedJS.delete(Object [, Array]);
+IndexedJS.delete(Object, Array);
 ```
 
-For the ``delete`` method, the mode is automatically ``"readwrite"`` and cannot be overridden.
+For the `delete` method, the mode is automatically `"readwrite"` and cannot be overridden.
 
-As with the ``IndexedJS.query`` method, the ``Array`` passed as the optional second argument is the list of ObjectStores to query. At them moment, there's no support for creating multiple ObjectStores, so there's no need to specify - it's implied (support for multiple ObjectStores in the works).
+As with the `IndexedJS.query` method, the `Array` passed as the second argument is the list of ObjectStores to query.
 
 ### Options
 
 **key**
 
-Type: ``Number`` or ``String``
+Type: `Number` or `String`
 
-Default: ``false``
+Default: `false`
 
-Pass the ``key`` for the object to be deleted.
+Pass the `key` referencing the object to be deleted.
 
 ```javascript
 
 /* IndexedJS.delete() */
 
-// delete the 2007 release of "Song Remains the Same" on principle
-RockAlbums.add({
-  key: "8122-79981-2",
+// Delete the project whose auto-incrementing key is 12
+TimeTracker.add({
+  key: 12,
   onsuccess: function() {
     // handle events
   },
@@ -458,18 +416,12 @@ RockAlbums.add({
 });
 ```
 
-
-## Todo
-
-- Add support for [IDBObjectStore.openKeyCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore.openKeyCursor)
-
-
 ### Changelog:
 
 **v1.0.0**
 
-- It is no longer necessary to call the ``IndexedJS.open()`` method after instantiation.
+- It is no longer necessary to call the `IndexedJS.open()` method after instantiation.
 - Added backward compatibility for IDBDatabase.transaction
-- Changed ``this`` for ``cursor.onsuccess`` to refer to the cursor itself to gain access to cursor properties (``source``, ``direction``, ``key`` and ``primaryKey``)
-- Added support for ``cursor.advance`` method
-- Added support for ``cursor.delete`` and ``cursor.update`` methods
+- Changed `this` for `cursor.onsuccess` to refer to the cursor itself to gain access to cursor properties (`source`, `direction`, `key` and `primaryKey`)
+- Added support for `cursor.advance` method
+- Added support for `cursor.delete` and `cursor.update` methods
