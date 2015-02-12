@@ -17,30 +17,11 @@ function IndexedJS(options) {
   this.opts = {};
   this.opts.database = options.name || null;
   this.opts.version = options.version || null;
-  this.opts.store = options.store || null;
-  this.opts.multiStore = false;
   this.opts.stores = options.stores || null;
 
   if (!this.opts.database || !this.opts.version) {
     console.error('You must specify a name and version number (int) for the database');
   }
-
-  /**
-   * Key Path vs. Key Generator
-   * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Structuring_the_database
-   */
-  if (this.opts.stores) {
-    // Create more than one ObjectStore
-    // Set multiStore to true and collect the name
-    this.opts.multiStore = true;
-    this.opts.store = options.stores[0].name || null;
-  }
-
-  // Assign values for first pass
-  // createAdditionalObjectStores() will take care of any additional ObjectStores
-  this.opts.keyPath = options.keyPath || options.stores[0].keyPath || false;
-  this.opts.autoIncrement = options.autoIncrement || options.stores[0].autoIncrement || false;
-  this.opts.indexes = options.indexes || options.stores[0].indexes || null;
 
   this.opts.onsuccess = options.onsuccess || false;
   this.opts.onerror = options.onerror || false;
@@ -59,7 +40,12 @@ function IndexedJS(options) {
 IndexedJS.prototype.open = function(opts) {
   var setKey;
 
-  // @returns the keyPath setting for the passed options object
+  /**
+   * Key Path vs. Key Generator
+   *
+   * @returns the keyPath setting for the passed options object
+   * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Structuring_the_database
+   */
   function setKeyOption(options) {
     if (options.keyPath) {
       // Use a key path
@@ -71,8 +57,6 @@ IndexedJS.prototype.open = function(opts) {
       return false;
     }
   }
-
-  setKey = setKeyOption(opts);
 
   var request = indexedDB.open(opts.database, opts.version);
 
@@ -86,64 +70,35 @@ IndexedJS.prototype.open = function(opts) {
       console.error('IndexedJS.onupgradeneeded: Error', e);
     };
 
-    if(db.objectStoreNames.contains(opts.store)) {
-      db.deleteObjectStore(opts.store);
-    }
+    // Create the ObjectStores
+    for(var i = 0; i < opts.stores.length; i++) {
 
-    if(!db.objectStoreNames.contains(opts.store)) {
-      // Create the ObjectStore
-      if (setKey) {
-        objStore = db.createObjectStore(opts.store, setKey);
+      if(db.objectStoreNames.contains(opts.stores[i].name)) {
+        db.deleteObjectStore(opts.stores[i].name);
       }
-      // Create indexes by which environments can be found
-      if (opts.indexes) {
-        for (var key in opts.indexes) {
-          // store.createIndex("String", "String", { unique: Boolean });
-          objStore.createIndex(key, key, { unique: opts.indexes[key] });
+
+      // Set the key option
+      setKey = setKeyOption(opts.stores[i]);
+
+      if(!db.objectStoreNames.contains(opts.stores[i].name)) {
+        // Create the ObjectStore
+        if (setKey) {
+          objStore = db.createObjectStore(opts.stores[i].name, setKey);
+        }
+        // Create indexes by which environments can be found
+        if (opts.stores[i].indexes) {
+          for (var key in opts.stores[i].indexes) {
+            // store.createIndex("String", "String", { unique: Boolean });
+            objStore.createIndex(key, key, { unique: opts.stores[i].indexes[key] });
+          }
         }
       }
     }
 
   };
 
-  /**
-   * Create multiple ObjectStores
-   *
-   * @param {Object} database The IndexedJS.db object
-   * @param {Object} opts An index of the options.stores array
-   */
-  function createAdditionalObjectStores(database, opts) {
-    var setKey, db, objStore;
-    var version =  parseInt(database.version);
-
-    // Create the ObjectStore
-    if(!database.objectStoreNames.contains(opts.name)) {
-      // Close the database; reopen it and upgrade
-      database.close();
-
-      var nextRequest = indexedDB.open(database.name, version+1);
-
-      nextRequest.onupgradeneeded = function (e) {
-        setKey = setKeyOption(opts);
-        db = e.target.result;
-        objStore = db.createObjectStore(opts.name, setKey);
-      };
-
-      nextRequest.onsuccess = function (e) {
-        e.target.result.close();
-      };
-    }
-
-  }
-
   request.onsuccess = function(e) {
     IndexedJS.db = e.target.result;
-    if (opts.multiStore) {
-      console.log('running multiStore');
-      for(var i = 1; i < opts.stores.length; i++) {
-        createAdditionalObjectStores(IndexedJS.db, opts.stores[i]);
-      }
-    }
     console.log('IndexedJS.open: Successful');
     if (opts.onsuccess) {
       opts.onsuccess(e);
