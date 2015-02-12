@@ -1,13 +1,10 @@
 {
   "name": "IndexedJS",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "A simple, no-frills wrapper for IndexedDB.",
   "repository": {
     "type": "git",
     "url": "http://github.com/goodguyry/IndexedJS.git"
-  },
-  "dependencies": {
-    "grunt": "^0.4.5"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
