@@ -146,7 +146,7 @@ var TimeTracker = new IndexedJS(schema);
 
 _key & index queries_: `this` refers to the object found in the ObjectStore.
 
-_cursor queries_: `this` refers to the `cursor` itself, which give access to the `cursor` properties (`cursor.source`, `cursor.direction`, `cursor.key` and `cursor.primaryKey`) and methods (`cursor.delete()` and `cursor.update()`).
+_cursor queries_: `this` refers to the `cursor` itself, which give access to the `cursor` [properties and methods](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor).
 
 **oncomplete**
 
