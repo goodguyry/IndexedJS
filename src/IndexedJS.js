@@ -154,8 +154,8 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
   var options = this.verifyOptions(queryOptions);
 
   if (!storeArray) {
-    storeArray = this.opts.store;
-    console.warn('IndexedJS.query: No Object Store given; assuming "'+storeArray+'"');
+    console.error('IndexedJS.query: You must specify an ObjectStore.');
+    return false;
   }
 
   if (options.key || options.index || options.cursor) {
@@ -309,8 +309,8 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
   var options = this.verifyOptions(addOptions);
 
   if (!storeArray) {
-    storeArray = this.opts.store;
-    console.warn('IndexedJS.add: No Object Store given; assuming "'+storeArray+'"');
+    console.error('IndexedJS.query: You must specify an ObjectStore.');
+    return false;
   }
 
   if (!options.data) {
@@ -362,8 +362,8 @@ IndexedJS.prototype.delete = function(deleteOptions, storeArray) {
   var options = this.verifyOptions(deleteOptions);
 
   if (!storeArray) {
-    storeArray = this.opts.store;
-    console.warn('IndexedJS.delete: No Object Store given; assuming "'+storeArray+'"');
+    console.error('IndexedJS.query: You must specify an ObjectStore.');
+    return false;
   }
 
   if (!options.key) {
