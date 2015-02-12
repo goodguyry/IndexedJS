@@ -191,25 +191,25 @@ The `index` object's property is the index name, and property value is the index
 ```javascript
 /* IndexedJS.query() by index */
 
-TimeTracker.query({
-    mode: "readwrite",
-    index: {
-      // Find a project by name
-      name: "IndexedJS Documentation",
-    },
-    onsuccess: function() {
-      // request.onsuccess
-    },
-    oncomplete: function() {
-      // transaction.complete
-    },
-    onerror: function() {
-      // request.onerror
-    }
+// The query options to be passed
+var options = {
+  mode: "readwrite",
+  index: {
+    // Find a project by name
+    name: "IndexedJS Documentation",
   },
-  // The ObjectStore to query
-  ['Projects']
-);
+  onsuccess: function() {
+    // request.onsuccess
+  },
+  oncomplete: function() {
+    // transaction.complete
+  },
+  onerror: function() {
+    // request.onerror
+  }
+};
+
+TimeTracker.query(options, ['Projects']);
 ```
 
 #### Using a cursor
@@ -286,24 +286,24 @@ The `only` property only returns the object with the desired key.
 
 /* IndexedJS.query - lowerBound */
 
-TimeTracker.query({
-    cursor: {
-      lower: 1410232894030,
-      include: false
-    },
-    onsuccess: function() {
-      // request.onsuccess
-    },
-    oncomplete: function() {
-      // transaction.complete
-    },
-    onerror: function() {
-      // request.onerror
-    }
+// The query options
+var options = {
+  cursor: {
+    lower: 1410232894030,
+    include: false
   },
-  // The ObjectStore to query
-  ['Weeks']
-);
+  onsuccess: function() {
+    // request.onsuccess
+  },
+  oncomplete: function() {
+    // transaction.complete
+  },
+  onerror: function() {
+    // request.onerror
+  }
+};
+
+TimeTracker.query(options, ['Weeks']);
 ```
 
 #### Collecting values from the cursor
@@ -315,27 +315,27 @@ It's often important to collect values as the cursor iterates over the keys.
 
 /* Collecting values from the cursor */
 
-var opts = {
-  // the array in which to collect the titles
-  titles: [],
+var options = {
+  // The array in which to collect the titles
+  projects: [],
   cursor: {
-    // cursor over all keys
+    // Cursor over all keys
     bound: false
   },
   onsuccess: function() {
-    // collect the titles
+    // Collect the project projects
     // `this` refers to the cursor
-    opts.titles.push(this.title);
+    options.projects.push(this.project);
   },
   oncomplete: function() {
-    // this now refers to the opts object
-    for (var i = 0; i < this.titles.length; i++) {
-      // do something with the titles
+    // `this` now refers to the options object
+    for (var i = 0; i < this.projects.length; i++) {
+      // Do something with the projects
     }
   }
 };
 
-TimeTracker.query(opts);
+TimeTracker.query(options, ["Weeks");
 ```
 
 Or, of course, an array could be created outside of the function and used in the same manner. As always, do whatever works best for the project.
@@ -364,20 +364,22 @@ Add the `data` object to the options in order to pass in values to save. For upd
 
 /* IndexedJS.add() */
 
-// set up the `project` object with new or updated values
+// Set up the `project` object with new or updated values
 var project = {};
 project.name = "Company Website";
 project.description = "Contact page refresh";
 
-TimeTracker.add({
+var options = {
   data: project,
   onsuccess: function() {
-    // handle events
+    // request.onsuccess
   },
   oncomplete: function() {
-    // handle events
+    // transaction.complete
   }
-});
+};
+
+TimeTracker.add(options, ["Projects");
 ```
 
 ## Deleting from the ObjectStore
@@ -405,18 +407,24 @@ Pass the `key` referencing the object to be deleted.
 /* IndexedJS.delete() */
 
 // Delete the project whose auto-incrementing key is 12
-TimeTracker.add({
+var options = {
   key: 12,
   onsuccess: function() {
-    // handle events
+    // request.onsuccess
   },
   oncomplete: function() {
-    // handle events
+    // transaction.complete
   }
-});
+};
+
+TimeTracker.delete(options, ["Projects"]);
 ```
 
 ### Changelog:
+
+**v1.1.0**
+
+- Multiple ObjectStore creation
 
 **v1.0.0**
 
