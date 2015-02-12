@@ -335,7 +335,7 @@ var options = {
   }
 };
 
-TimeTracker.query(options, ["Weeks");
+TimeTracker.query(options, ["Weeks"]);
 ```
 
 Or, of course, an array could be created outside of the function and used in the same manner. As always, do whatever works best for the project.
@@ -379,7 +379,7 @@ var options = {
   }
 };
 
-TimeTracker.add(options, ["Projects");
+TimeTracker.add(options, ["Projects"]);
 ```
 
 ## Deleting from the ObjectStore
