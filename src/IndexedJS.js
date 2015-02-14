@@ -20,7 +20,7 @@ function IndexedJS(options) {
   this.opts.stores = options.stores || null;
 
   if (!this.opts.database || !this.opts.version) {
-    console.error('You must specify a name and version number (int) for the database');
+    console.error('IndexedJS: Failed to open: You must specify a database name and version number (int).');
   }
 
   this.opts.onsuccess = options.onsuccess || false;
@@ -67,7 +67,7 @@ IndexedJS.prototype.open = function(opts) {
     var objStore;
 
     e.target.result.onerror = function(e) {
-      console.error('IndexedJS.onupgradeneeded: Error', e);
+      console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
     };
 
     // Create the ObjectStores
@@ -109,7 +109,7 @@ IndexedJS.prototype.open = function(opts) {
     if (opts.onerror) {
       opts.onerror(e);
     } else {
-      console.log(e.target.error.name + ': ' + e.target.error.message);
+      console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
     }
   };
 
@@ -259,6 +259,14 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
         }
       };
 
+      cursor.onerror = function(e) {
+        if (opts.onerror) {
+          opts.onerror(e);
+        } else {
+          console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+        }
+      };
+
     } else if (options.key || options.index) {
       var request;
 
@@ -289,6 +297,14 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
         console.log('IndexedJS.query: Complete');
         if (options.oncomplete) {
           options.oncomplete();
+        }
+      };
+
+      request.onerror = function(e) {
+        if (opts.onerror) {
+          opts.onerror(e);
+        } else {
+          console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
         }
       };
 
@@ -336,7 +352,7 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
       if (options.onerror) {
         options.onerror(e);
       } else {
-        console.error(request.errorCode);
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
       }
     };
 
@@ -381,7 +397,7 @@ IndexedJS.prototype.delete = function(deleteOptions, storeArray) {
       if (options.onerror) {
         options.onerror(e);
       } else {
-        console.error(request.errorCode);
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
       }
     };
 
