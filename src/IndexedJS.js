@@ -144,6 +144,57 @@ IndexedJS.prototype.verifyOptions = function(options) {
 };
 
 /**
+ * IndexedJS.count
+ * Count objects in an ObjectStore
+ *
+ * @param {Object} Success, error and complete callbacks
+ * @param {Array}  An array of object stores to access
+ */
+IndexedJS.prototype.count = function(countOptions, storeArray) {
+  var options = this.verifyOptions(countOptions);
+
+  if (!storeArray) {
+    console.error('IndexedJS.count: You must specify an ObjectStore.');
+    return false;
+  }
+
+  if (IndexedJS.db) {
+    var transaction = IndexedJS.db.transaction(storeArray, 'readonly');
+    var objStore = transaction.objectStore(storeArray);
+
+    var result, request;
+
+    // Count the stored objects
+    request = objStore.count();
+
+    request.onsuccess = function(e) {
+      // The number of objects found
+      result = e.target.result;
+      console.log('count', result);
+      if (options.onsuccess) {
+        options.onsuccess.call(result);
+      }
+    };
+
+    transaction.oncomplete = function() {
+      console.log('IndexedJS.count: Complete', result);
+      if (options.oncomplete) {
+        options.oncomplete(result);
+      }
+    };
+
+    request.onerror = function(e) {
+      if (opts.onerror) {
+        opts.onerror(e);
+      } else {
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+      }
+    };
+  }
+
+};
+
+/**
  * IndexedJS.query
  * Query the database
  *

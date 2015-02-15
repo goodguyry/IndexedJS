@@ -26,6 +26,7 @@ The [production version](https://github.com/goodguyry/IndexedJS/blob/master/dist
   - [Collecting values from the cursor](#collecting-values-from-the-cursor)
 - [Adding to/updating the ObjectStore](#adding-toupdating-the-objectstore)
 - [Deleting from the ObjectStore](#deleting-from-the-objectstore)
+- [Count objects in an ObjectStore](#count-objects-in-an-objectstore)
 - [Changelog](#changelog)
 
 ## Creating and opening the database
@@ -418,6 +419,24 @@ var options = {
 };
 
 TimeTracker.delete(options, ["Projects"]);
+```
+
+## Count objects in an ObjectStore
+
+```
+IndexedJS.count(Object, Array);
+```
+
+The `count` method passes its result into the `oncomplete` handler.
+
+```javascript
+var options = {
+  oncomplete: function(result) {
+    // `result` is the number of objects found
+  }
+};
+
+TimeTracker.count(options, ['Projects']);
 ```
 
 ### Changelog:
