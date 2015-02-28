@@ -2,8 +2,8 @@
  * IndexedJS
  * Initialize the database
  *
- * @param {Object} The scheme with which to create the database,
- *                 along with success, error and complete callbacks to be used by IndexedJS.open
+ * @param {Object} options The scheme with which to create the database,
+ *                         along with success, error and complete callbacks to be used by IndexedJS.open
  */
 function IndexedJS(options) {
   'use strict';
@@ -119,7 +119,7 @@ IndexedJS.prototype.open = function(opts) {
  * IndexedJS.verifyOptions
  * Verify all options are set and accounted for
  *
- * @param {Object} The options passed to one of the IndexedJS methods
+ * @param {Object} options The options passed to one of the IndexedJS methods
  * @return {Object} The verified options object, ready to be used
  */
 IndexedJS.prototype.verifyOptions = function(options) {
@@ -147,8 +147,8 @@ IndexedJS.prototype.verifyOptions = function(options) {
  * IndexedJS.count
  * Count objects in an ObjectStore
  *
- * @param {Object} Success, error and complete callbacks
- * @param {Array}  An array of object stores to access
+ * @param {Object} countOptions Success, error and complete callbacks
+ * @param {Array}  storeArray An array of object stores to access
  */
 IndexedJS.prototype.count = function(countOptions, storeArray) {
   var options = this.verifyOptions(countOptions);
@@ -198,8 +198,9 @@ IndexedJS.prototype.count = function(countOptions, storeArray) {
  * IndexedJS.query
  * Query the database
  *
- * @param {Object} Definition of [how/for what] to query the database, along with success, error and complete callbacks
- * @param {Array}  An array of object store to query
+ * @param {Object} queryOptions Definition of [how/for what] to query the database,
+ *                              along with success, error and complete callbacks
+ * @param {Array}  storeArray An array of object store to query
  */
 IndexedJS.prototype.query = function(queryOptions, storeArray) {
   var options = this.verifyOptions(queryOptions);
@@ -369,14 +370,14 @@ IndexedJS.prototype.query = function(queryOptions, storeArray) {
  * IndexedJS.add
  * Add information to an object store
  *
- * @param {Object} The data to be saved, along with success, error and complete callbacks
- * @param {Array}  An array of object store to query
+ * @param {Object} addOptions The data to be saved, along with success, error and complete callbacks
+ * @param {Array}  storeArray An array of object store to query
  */
 IndexedJS.prototype.add = function(addOptions, storeArray) {
   var options = this.verifyOptions(addOptions);
 
   if (!storeArray) {
-    console.error('IndexedJS.query: You must specify an ObjectStore.');
+    console.error('IndexedJS.add: You must specify an ObjectStore.');
     return false;
   }
 
@@ -389,7 +390,7 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
   if (IndexedJS.db) {
     var transaction = IndexedJS.db.transaction(storeArray, 'readwrite');
     var objStore = transaction.objectStore(storeArray);
-    var request = objStore.put(options.data);
+    var request = objStore.add(options.data);
 
     request.onsuccess = function(e) {
       result = e.target.result;
@@ -422,14 +423,14 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
  * IndexedJS.delete
  * Remove data from an object store
  *
- * @param {Object} The data to be removed, along with error and complete callbacks
- * @param {Array}  An array of object store to query
+ * @param {Object} deleteOptions The data to be removed, along with error and complete callbacks
+ * @param {Array}  storeArray An array of object store to query
  */
 IndexedJS.prototype.delete = function(deleteOptions, storeArray) {
   var options = this.verifyOptions(deleteOptions);
 
   if (!storeArray) {
-    console.error('IndexedJS.query: You must specify an ObjectStore.');
+    console.error('IndexedJS.delete: You must specify an ObjectStore.');
     return false;
   }
 
