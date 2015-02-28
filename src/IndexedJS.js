@@ -382,7 +382,7 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
   }
 
   if (!options.data) {
-    console.error('You must specify an object to be saved.');
+    console.error('IndexedJS.add: You must specify an object to be saved.');
     console.info('See http://github.com/goodguyry/IndexedDB.js for documentation.');
     return false;
   }
@@ -435,7 +435,7 @@ IndexedJS.prototype.update = function(updateOptions, storeArray) {
   }
 
   if (!options.data) {
-    console.error('You must specify an object to be saved.');
+    console.error('IndexedJS.update: You must specify an object to be saved.');
     console.info('See http://github.com/goodguyry/IndexedDB.js for documentation.');
     return false;
   }
