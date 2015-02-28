@@ -420,6 +420,59 @@ IndexedJS.prototype.add = function(addOptions, storeArray) {
 };
 
 /**
+ * IndexedJS.update
+ * update information to an object store
+ *
+ * @param {Object} updateOptions The data to be saved, along with success, error and complete callbacks
+ * @param {Array}  storeArray An array of object store to query
+ */
+IndexedJS.prototype.update = function(updateOptions, storeArray) {
+  var options = this.verifyOptions(updateOptions);
+
+  if (!storeArray) {
+    console.error('IndexedJS.update: You must specify an ObjectStore.');
+    return false;
+  }
+
+  if (!options.data) {
+    console.error('You must specify an object to be saved.');
+    console.info('See http://github.com/goodguyry/IndexedDB.js for documentation.');
+    return false;
+  }
+
+  if (IndexedJS.db) {
+    var transaction = IndexedJS.db.transaction(storeArray, 'readwrite');
+    var objStore = transaction.objectStore(storeArray);
+    var request = objStore.put(options.data);
+
+    request.onsuccess = function(e) {
+      result = e.target.result;
+      console.log('IndexedJS.update: '+result+' successful');
+      if (options.onsuccess) {
+        options.onsuccess.call(result);
+      }
+    };
+
+    request.onerror = function(e) {
+      if (options.onerror) {
+        options.onerror(e);
+      } else {
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+      }
+    };
+
+    transaction.oncomplete = function(e) {
+      console.log('IndexedJS.update: Complete');
+      if (options.oncomplete) {
+        options.oncomplete();
+      }
+    };
+
+  }
+
+};
+
+/**
  * IndexedJS.delete
  * Remove data from an object store
  *
