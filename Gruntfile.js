@@ -9,7 +9,7 @@
             ' * Source available at <%= pkg.repository.url %> */',
 
     jshint: {
-      files: ['src/*.js', 'dist/main.js'],
+      files: ['src/*.js'],
       options: {
         expr: true,
         globals: {
@@ -25,7 +25,7 @@
       options: {
         report: 'min',
         banner: '<%= banner %>\n\n',
-        mangle: false,
+        mangle: true,
         compress: {
           drop_console: true
         }
@@ -39,10 +39,9 @@
     watch: {
       src: {
         files: ['src/*.js'],
-        tasks: ['uglify', 'src-copy'],
+        tasks: ['jshint', 'uglify'],
         options: {
-          spawn: false,
-          livereload: true
+          spawn: false
         }
       }
     }
