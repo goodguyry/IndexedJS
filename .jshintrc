@@ -1,0 +1,11 @@
+{
+  "curly"     : true,
+  "eqeqeq"    : true,
+  "latedef"   : true,
+  "nonew"     : true,
+  "undef"     : true,
+  "unused"    : true,
+  "eqnull"    : true,
+  "browser"   : true,
+  "devel"     : true
+}

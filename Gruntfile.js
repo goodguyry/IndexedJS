@@ -11,13 +11,7 @@
     jshint: {
       files: ['src/*.js'],
       options: {
-        expr: true,
-        globals: {
-          jQuery: false,
-          console: true,
-          module: true,
-          eqeqeq: true
-        }
+        jshintrc: '.jshintrc'
       }
     },
 
