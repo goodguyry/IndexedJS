@@ -22,6 +22,7 @@ function IndexedJS(name) {
   return this;
 }
 
+
 /**
  * IndexedJS.schema
  * Define the database schema
@@ -124,4 +125,40 @@ IndexedJS.prototype.open = function() {
   };
 
   return self;
+};
+
+
+/**
+ * IndexedJS.in
+ * Sets the ObjectStore(s) for a transaction
+ */
+IndexedJS.prototype.in = function(stores) {
+
+  this._in = [];
+
+  if (! stores || ! (Array.isArray(stores) || typeof stores === 'string')) {
+    console.error('IndexedJS: Bad `stores` value');
+    return false;
+  }
+
+  // Test for type; convert a String to an Array
+  if (typeof stores === 'string') {
+    // Convert the String into an Array
+    stores = new Array(stores)
+  }
+
+  // Make sure each of the stores is a valid ObjectStore name
+  var globalStores = this._schema.stores;
+
+  for (var i = 0; i < stores.length; i++) {
+    for (var j = 0; j < globalStores.length; j++) {
+      if (stores[i] === globalStores[j].name) {
+        // Add to IndexedJS Object
+        this._in.push(stores[i]);
+        break;
+      }
+    }
+  }
+
+  return this;
 };
