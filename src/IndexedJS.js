@@ -132,13 +132,15 @@ IndexedJS.prototype.open = function() {
 /**
  * IndexedJS.in
  * Sets the ObjectStore(s) for a transaction
+ *
+ * @param {Array|String}  stores ObjectStore(s) to access
  */
 IndexedJS.prototype.in = function(stores) {
 
   this._in = [];
 
   if (! stores || ! (Array.isArray(stores) || typeof stores === 'string')) {
-    console.error('IndexedJS: Bad `stores` value');
+    console.error('IndexedJS: A String of one ObjectStore or Array of ObjectStores is required.');
     return false;
   }
 
@@ -163,6 +165,66 @@ IndexedJS.prototype.in = function(stores) {
 
   return this;
 };
+
+
+/**
+ * IndexedJS.count
+ * Count objects in an ObjectStore
+ *
+ * @param {Array}  stores ObjectStores to access
+ */
+IndexedJS.prototype.count = function(stores) {
+
+  if (! stores) {
+    console.error('IndexedJS: count() requires an Array of ObjectStores as its argument.');
+    return false;
+  }
+
+  if (! (Array.isArray(stores) || typeof stores === 'string')) {
+    console.error('IndexedJS: A String of one ObjectStore or Array of ObjectStores is required.');
+    return false;
+  }
+
+  // Test for type; convert a String to an Array
+  if (typeof stores === 'string') {
+    // Convert the String into an Array
+    stores = new Array(stores)
+  }
+
+  var self = this,
+      objStore, request;
+
+  if (self._db) {
+
+    self._count = [];
+
+    var transaction = self._db.transaction(stores, 'readonly'),
+        request;
+
+    // IDBTransaction.objectStore() accepts a String
+    // Loop through the Array
+    for (var i = 0; i < stores.length; i++) {
+      objStore = transaction.objectStore(stores[i]);
+      // Count the stored objects
+      request = objStore.count();
+
+      request.onsuccess = function(e) {
+        // The number of objects found
+        self._count.push(e.target.result);
+        console.log('count', self._count);
+      };
+
+      request.onerror = function(e) {
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+      };
+
+      transaction.oncomplete = function() {
+        console.log('IndexedJS.count: Complete', self._count);
+      };
+    }
+  }
+};
+
 
 /**
  * IndexedJS.add
