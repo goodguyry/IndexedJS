@@ -249,22 +249,22 @@ IndexedJS.prototype.add = function(data) {
     for (var i = 0; i < self._in.length; i++) {
       objStore = transaction.objectStore(self._in[i]);
       request = objStore.add(data);
+
+      request.onsuccess = function(e) {
+        self._result = e.target.result;
+        console.log('IndexedJS.add: ' + self._result + ' successful');
+      };
+
+      request.onerror = function(e) {
+        console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+      };
+
+      transaction.oncomplete = function(e) {
+        console.log('IndexedJS.add: Complete');
+      };
     }
 
-    request.onsuccess = function(e) {
-      self._result = e.target.result;
-      console.log('IndexedJS.add: ' + self._result + ' successful');
-    };
-
-    request.onerror = function(e) {
-      console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
-    };
-
-    transaction.oncomplete = function(e) {
-      console.log('IndexedJS.add: Complete');
-    };
+    return self;
 
   }
-
-  return self;
 }
