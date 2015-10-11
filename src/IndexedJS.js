@@ -222,6 +222,9 @@ IndexedJS.prototype.count = function(stores) {
         console.log('IndexedJS.count: Complete', self._count);
       };
     }
+
+    return self;
+
   }
 };
 
