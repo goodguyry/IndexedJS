@@ -14,6 +14,7 @@ function IndexedJS(name) {
 
   this._schema = {};
   this._schema.database = name || null;
+  this._db = null;
 
   if (! name) {
     throw 'IndexedJS Schema error: You must specify a database name.';
@@ -52,6 +53,7 @@ IndexedJS.prototype.schema = function(schema) {
  * Open the database
  */
 IndexedJS.prototype.open = function() {
+
   var setKey,
       self = this;
 
@@ -73,14 +75,13 @@ IndexedJS.prototype.open = function() {
     }
   }
 
-  var request = window.indexedDB.open(self._schema.database, self._schema.version);
   // IDBOpenDBRequest
-  this.IDBOpenDBRequest = request;
+  var request = window.indexedDB.open(self._schema.database, self._schema.version);
 
   // Sets up the datastore
   // Only on first run and version change
   request.onupgradeneeded = function(e) {
-    var db = self.IDBOpenDBRequest.result;
+    var db = e.target.result;
     var objStore;
 
     e.target.result.onerror = function(e) {
@@ -116,8 +117,8 @@ IndexedJS.prototype.open = function() {
 
   request.onsuccess = function(e) {
     // Assign the reult back to the IndexedJS Object
-    self.IDBDatabase = e.target.result;
-    console.log('IndexedJS.open: Successful', self.IDBDatabase);
+    self._db = e.target.result;
+    console.log('IndexedJS.open: Successful', self._db);
   };
 
   request.onerror = function(e) {
@@ -162,3 +163,46 @@ IndexedJS.prototype.in = function(stores) {
 
   return this;
 };
+
+/**
+ * IndexedJS.add
+ * Add to ObjectStore(s)
+ */
+IndexedJS.prototype.add = function(data) {
+
+  if (!this._in) {
+    console.error('IndexedJS.add: You must specify an ObjectStore.');
+    return false;
+  }
+
+  var self = this,
+      objStore,
+      request;
+
+  if (self._db) {
+    var transaction = self._db.transaction(self._in, 'readwrite');
+
+    // IDBTransaction.objectStore() accepts a String
+    // Loop through the Array
+    for (var i = 0; i < self._in.length; i++) {
+      objStore = transaction.objectStore(self._in[i]);
+      request = objStore.add(data);
+    }
+
+    request.onsuccess = function(e) {
+      self._result = e.target.result;
+      console.log('IndexedJS.add: ' + self._result + ' successful');
+    };
+
+    request.onerror = function(e) {
+      console.error('IndexedJS: ' + e.target.error.name + ': ' + e.target.error.message);
+    };
+
+    transaction.oncomplete = function(e) {
+      console.log('IndexedJS.add: Complete');
+    };
+
+  }
+
+  return self;
+}
